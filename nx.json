@@ -55,5 +55,107 @@
         "linter": "eslint"
       }
     }
-  }
+  },
+
+  "release": {
+    /* Only release projects with the tag of 'type:app'
+     * ref: https://nx.dev/recipes/nx-release/get-started-with-nx-release#configure-projects-to-release
+     */
+    "projects": ["tag:type:app"],
+    
+    /* Configure nx release to release projects independently instead of all at once
+     * reg: https://nx.dev/recipes/nx-release/release-projects-independently#configure-independent-releases 
+     */
+    "projectsRelationship": "independent",
+
+    /* Custom git tag for project release
+     * ref: https://nx.dev/recipes/nx-release/release-projects-independently#create-a-git-tag-for-each-project
+     */
+    "releaseTagPattern": "release/{projectName}/{version}",
+
+    /* Enable project level changelog generation
+     * ref: https://nx.dev/recipes/nx-release/release-projects-independently#changelogs
+     */
+    "changelog": {
+      // Project Level Changelogs (https://nx.dev/recipes/nx-release/automate-github-releases#project-level-changelogs)
+      "projectChangelogs": {
+        "renderOptions": {
+          "authors": false
+        }
+      }
+    },
+
+    /* Enable auto version bump using coventional commits
+     * ref: https://nx.dev/recipes/nx-release/automatically-version-with-conventional-commits#automatically-version-with-conventional-commits
+     */
+    "version": {
+      "conventionalCommits": true
+    },
+
+    /* Customize Conventional Commit Types 
+     * ref: https://nx.dev/recipes/nx-release/customize-conventional-commit-types#customize-conventional-commit-types
+     * ref: https://www.conventionalcommits.org/en/v1.0.0/
+     * ref: https://github.com/pvdlg/conventional-changelog-metahub 
+     * ref: https://gist.github.com/qoomon/5dfcdf8eec66a051ecd85625518cfd13#types
+     */
+    "conventionalCommits": {
+      "types": {
+        // Changes that add, remove or extend a feature
+        "feat": {
+          "semverBump": "minor",
+          "changelog": {
+            "title": "✨ Features"
+          }
+        },
+        // Dependency Updates
+        "dep": {
+          "semverBump": "minor",
+          "changelog": {
+            "title": "📚 Dependency Updates"
+          }
+        },
+        // Changes that fix bugs
+        "fix": {
+          "semverBump": "patch",
+          "changelog": {
+            "title": "🐛 Fixes"
+          }
+        },
+        // Changes to the build process or auxiliary tools and libraries such as documentation
+        "chore": {
+          "semverBump": "patch",
+          "changelog": {
+            "title": "♻️ Chores"
+          }
+        },
+        // Changes that improve performance
+        "perf": {
+          "semverBump": "minor",
+          "changelog": {
+            "title": "🚀 Performance Improvements"
+          }
+        },
+        // Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+        "style": {
+          "semverBump": "none",
+          "changelog": {
+            "title": "💎 Code Styles"
+          }
+        },
+        // Changes that neither fixes a bug nor adds a feature
+        "refactor": {
+          "semverBump": "none",
+          "changelog": {
+            "title": "📦 Code Refactoring"
+          }
+        },
+        // Change that add missing tests
+        "test": {
+          "semverBump": "none",
+          "changelog": {
+            "title": "🚨 Tests"
+          }
+        }
+      }
+    }
 }
