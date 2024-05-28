@@ -1,0 +1,33 @@
+name: Deploy
+
+on:
+  workflow_dispatch: 
+    inputs:
+      tag:
+        description: Enter Tag you want to deploy
+        type: string
+        required: true
+      environment:
+        description: The environment to deploy this app to (default is "dev")
+        type: choice
+        options: [dev, qc, sandbox, prod]
+        default: dev
+        required: true
+      
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Extract Project name & version from tag
+        id: project
+        run: |
+          echo "name=$(cut -d / -f 2 <<< ${{ inputs.tag }})" >> $GITHUB_OUTPUT
+          echo "version=$(cut -d / -f 3 <<< ${{ inputs.tag }})" >> $GITHUB_OUTPUT
+        shell: bash
+        
+      - name: Deploy App on ${{ inputs.environment }}
+        run: |
+          echo "App Name: ${{ steps.project.outputs.name }}"
+          echo "App Version: ${{ steps.project.outputs.version }}"
+          echo "target-env: ${{ inputs.environment }}"

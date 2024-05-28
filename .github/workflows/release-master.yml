@@ -1,0 +1,46 @@
+name: Release Master
+
+on:
+  # workflow_dispatch: 
+  workflow_run:
+    workflows: [ 'Lint Test build' ]
+    types: [ completed ]
+    branches: [ master ]
+
+permissions:
+  actions: read
+  contents: write
+  
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Connect your workspace on nx.app and uncomment this to enable task distribution.
+      # The "--stop-agents-after" is optional, but allows idle agents to shut down once the "e2e-ci" targets have been requested
+      # - run: npx nx-cloud start-ci-run --distribute-on="5 linux-medium-js" --stop-agents-after="e2e-ci"
+
+      # Cache node_modules
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Print Environment Info
+        run: npx nx report
+        shell: bash
+
+      - run: git config --global user.email "release-ci<>"
+      - run: git config --global user.name "Release CI"
+
+      # Bump version, generate changelog and tag repo (note: publish will be handled in a tag is pushed)
+      - name: Release
+        run: npx nx release --skip-publish --verbose
+        shell: bash
+
+      - run: git push && git push --tags
